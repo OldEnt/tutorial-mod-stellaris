@@ -1,0 +1,65 @@
+namespace = tutmod
+# Marks mod as installed by settign u pa global flag other mods can check against.
+# Scopes:
+# root: country this: country
+country_event = {
+	id = tutmod.1	# Uniquie ID of the event.
+	hide_window = yes	# Hide popup window for player.
+	fire_only_once = yes	# Move to blocklist after successful firing.
+	trigger = {
+		NOT = {
+			has_global_flag = tutmod_installed			# Must NOT have tutmod_installed global flag set up.
+		}
+	}
+	immediate = {
+		set_global_flag = tutmod_installed		# Set up global flag tutmod_installed.
+	}
+}
+
+# Removes military fleets, grants science ship and scientist.
+# Scopes:
+# Scope: root: country this: country
+country_event = {
+	id = tutmod.2
+	hide_window = yes
+	is_triggered_only = yes	# Fire only when called from elsewhere.
+	trigger = {
+		has_civic = tutmod_civic		# Must have tutmod_civic civic.
+	}
+	immediate = {
+		every_owned_fleet = {
+			# Iterate through every owned fleet of THIS country.
+			limit = {
+				is_ship_class = shipclass_military				# only fleets meeting shipclass_military criteria
+			}
+			delete_fleet = {
+				target = this				# Delete THIS fleet.
+				kill_leader = no				# Do not delete leader of THIS fleet (unassigns).
+			}
+		}
+		create_leader = {
+			# Create leader for THIS country.
+			class = scientist			# Specified scientist class.
+			species = this			# species = this, where THIS is the scope of where effect was written in (country, therefore species will be main country species).
+		}
+		create_fleet = {
+			# Create fleet for THIS country.
+			effect = {
+				# Execute list of effects for THIS fleet.
+				set_owner = prev				# Set owner of THIS fleet to PREV (PREV/previous scope being country we in previous brackets refered to as THIS).
+				create_ship = {
+					# Create ship for THIS fleet.
+					random_existing_design = science					# of random design which is science ship.
+					graphical_culture = owner					# Visual style of the ship is the same as OWNER of the fleet (can use PREV here).
+				}
+				set_location = {
+					target = owner.capital_scope.solar_system.starbase					# Set location of the fleet to owner's capital_scope's solar_system's starbase.
+					# distance = 0
+					# angle = random
+					# direction = out_system
+				}
+				assign_leader = last_created_leader				# Assigns last created leader to the fleet.
+			}
+		}
+	}
+}

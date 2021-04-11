@@ -1,0 +1,6 @@
+on_game_start_country = {
+	events = {
+		tutmod.1
+		tutmod.2
+	}
+}
